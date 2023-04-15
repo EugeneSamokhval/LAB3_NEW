@@ -22,12 +22,13 @@ def karno_map_constructor(variable: int):
 
 
 def number_of_variables_counter(number_of_variables):
-    collumns_exp = 0
+    collumns_exp = 1
     rows_exp = 0
-    columns = 2
-    rows = 0
+    columns = 1
+    rows = 1
     if number_of_variables % 2 != 0:
         rows = 1
+        columns = collumns_exp ** 2
         while rows+columns != number_of_variables:
             columns = collumns_exp**2
             collumns_exp += 1
