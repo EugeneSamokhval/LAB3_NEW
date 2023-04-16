@@ -86,9 +86,10 @@ def main():
     table_sdnf, table_sknf = table_simplfication.calculate()
     map_simplifier = map_sipflication.Map(out_table, variables_list)
     map_simplification_result = map_simplifier.miniterm_union()
-    print(output_list, table_of_variables, sdnf_string, sknf_string, sdnf_decoration(filled_sdnf_list),
-          sknf_decoration(filled_sknf_list), sdnf_decoration(counting_sdnf), sknf_decoration(counting_sknf),
-          sdnf_decoration(table_sdnf), sknf_decoration(table_sknf), sdnf_decoration(map_simplification_result),
+    print(sdnf_decoration(filled_sdnf_list), sknf_decoration(filled_sknf_list), "Расчётный метод:",
+          sdnf_decoration(counting_sdnf), sknf_decoration(counting_sknf), "Табличный метод:",
+          sdnf_decoration(table_sdnf), sknf_decoration(table_sknf),
+          "Карта карно:", sdnf_decoration(map_simplification_result),
           sep="\n")
     table_of_truth_decorator(out_table)
 
