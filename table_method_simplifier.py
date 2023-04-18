@@ -47,10 +47,10 @@ class Table:
         sdnf_united = sdnf_operable[:]
         iterator = 1
         while iterator != 0:
-            sknf_united, iterator = counting_method_simplifier.sdnf_simplification(sknf_united, iterator)
+            sknf_united, iterator = counting_method_simplifier.sdnf_simplification(sknf_united)
         iterator = 1
         while iterator != 0:
-            sdnf_united, iterator = counting_method_simplifier.sdnf_simplification(sdnf_united, iterator)
+            sdnf_united, iterator = counting_method_simplifier.sdnf_simplification(sdnf_united)
         self.operable_sknf = sknf_united
         self.sknf = sknf_operable
         self.sdnf = sdnf_operable

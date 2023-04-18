@@ -1,5 +1,4 @@
 import copy
-import math
 
 
 cycle = 0
@@ -117,10 +116,7 @@ def check_logic(shape, table):
         if table[cell[0]][cell[1]] == 1:
             check_box[iteration] = True
         iteration+=1
-    if len(check_box) == check_box.count(True):
-        return True
-    else:
-        return False
+    return len(check_box) == check_box.count(True)
 
 
 def tautology_check(shape: list, check_table: list):
@@ -128,10 +124,7 @@ def tautology_check(shape: list, check_table: list):
     for coordinates in range(len(shape)):
         if check_table[shape[coordinates][0]][shape[coordinates][1]] == 1:
             check_box[coordinates] = True
-    if check_box.count(True) > 0:
-        return False
-    else:
-        return True
+    return not check_box.count(True) > 0
 
 
 def next_iteration(shape, table):

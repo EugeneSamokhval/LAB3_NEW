@@ -19,13 +19,10 @@ def union_conditions(first_operand, second_operand)->bool:
                     flag = True
         elif first_operand[iterator] != second_operand[iterator] and flag:
             return False
-    if not flag:
-        return False
-    else:
-        return True
+    return flag
 
 
-def sdnf_simplification(operatable_function: list, iteration: int):
+def sdnf_simplification(operatable_function: list):
     result_list = []
     iteration = 0
     checkbox = [False for operand in operatable_function]
@@ -66,10 +63,10 @@ class Counting:
         sdnf_result = copy.deepcopy(self.sdnf_origin)
         sknf_result = copy.deepcopy(self.sknf_origin)
         while iteration != 0:
-            sknf_result, iteration = sdnf_simplification(sknf_result, iteration)
+            sknf_result, iteration = sdnf_simplification(sknf_result)
         iteration = 1
         while iteration != 0:
-            sdnf_result, iteration = sdnf_simplification(sdnf_result, iteration)
+            sdnf_result, iteration = sdnf_simplification(sdnf_result)
         final_result = SknfAndSdnfSolver.Solver()
         sknf_useless, sdnf_useless = final_result.checkout_function(sknf_result, sdnf_result)
         sdnf_optimised = []

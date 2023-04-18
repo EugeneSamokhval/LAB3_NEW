@@ -1,3 +1,5 @@
+import copy
+
 import LogicOperatins
 
 
@@ -9,8 +11,9 @@ def expression_parser(function: list):
     if type(function) == int:
         return function
     for iteration in range(len(function)):
-        if function[iteration].islower():
-            function[iteration] = 1
+        if not type(function[iteration]) == int:
+            if function[iteration].islower():
+                function[iteration] = 1
     return function
 
 
@@ -68,7 +71,7 @@ class Solver:
         solveable_form = []
         sdnf_list = empty_list_cleaner(sdnf_list)
         if len(sdnf_list) == 0:
-            return 0
+            return [0]
         if type(sdnf_list[0][0]) != str:
             solveable_form, stack = variable_processor_sdnf(sdnf_list, solveable_form, stack)
         else:
@@ -173,7 +176,7 @@ class Solver:
     def checkout_sdnf_subfunction(self, sdnf_list: list, operand: list):
         if not self.operand_checkout_sdnf(operand):
             return None
-        sdnf_copy = sdnf_list[:]
+        sdnf_copy =copy.deepcopy(sdnf_list)
         sdnf_copy.remove(operand)
         operand_truth_table = []
         for iteration in range(len(operand)):
