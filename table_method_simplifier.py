@@ -15,10 +15,7 @@ def table_correct_check(table: list):
         for sign in range(len(table[column])):
             if table[column][sign] == 1:
                 checked_columns[column] = True
-    if checked_columns.count(True) == len(checked_columns):
-        return True
-    else:
-        return False
+    return checked_columns.count(True) == len(checked_columns)
 
 
 def table_check(table: list, implicants: list):

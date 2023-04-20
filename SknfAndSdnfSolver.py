@@ -133,10 +133,7 @@ class Solver:
         solvable = self.sknf_output_list_creation(operand)
         solvable = expression_parser(solvable)
         result = self.solve(solvable)
-        if result == 0:
-            return True
-        else:
-            return False
+        return result == 0
 
     def checkout_sknf_subfunction(self, sknf_list: list, operand: list):
         if not self.operand_checkout_sknf(operand):
@@ -168,10 +165,7 @@ class Solver:
         solvable = self.sdnf_output_list_creation(operand)
         solvable = expression_parser(solvable)
         result = self.solve(solvable)
-        if result == 1:
-            return True
-        else:
-            return False
+        return result == 1
 
     def checkout_sdnf_subfunction(self, sdnf_list: list, operand: list):
         if not self.operand_checkout_sdnf(operand):

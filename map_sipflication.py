@@ -124,7 +124,7 @@ def tautology_check(shape: list, check_table: list):
     for coordinates in range(len(shape)):
         if check_table[shape[coordinates][0]][shape[coordinates][1]] == 1:
             check_box[coordinates] = True
-    return not check_box.count(True) > 0
+    return not check_box.count(True) > len(shape)/2
 
 
 def next_iteration(shape, table):
