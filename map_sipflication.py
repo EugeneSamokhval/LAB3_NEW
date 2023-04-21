@@ -124,7 +124,7 @@ def tautology_check(shape: list, check_table: list):
     for coordinates in range(len(shape)):
         if check_table[shape[coordinates][0]][shape[coordinates][1]] == 1:
             check_box[coordinates] = True
-    return not check_box.count(True) > len(shape)/2
+    return not check_box.count(True) > 3*len(shape)/4
 
 
 def next_iteration(shape, table):
@@ -209,70 +209,113 @@ def type_of_iteration(shape, table):
 def final_collection(list_of_vars, variables):
     changed_vars = [False for var in list_of_vars[0]]
     variables_previous = copy.deepcopy(list_of_vars[0])
+    output = []
     for sublist in list_of_vars:
         for variable in range(len(sublist)):
             if variables_previous[variable] != sublist[variable]:
                 changed_vars[variable] = True
-    changed_vars += changed_vars
-    all_variations = copy.deepcopy(variables)
-    all_variations: list
-    for variable in variables:
-        all_variations.append('!' + variable)
-    controling_dictionary = {all_variations[iteration]: changed_vars[iteration]
-                             for iteration in range(len(all_variations))}
-    return controling_dictionary
+    for variable in range(len(changed_vars)):
+        if not changed_vars[variable]:
+            if list_of_vars[0][variable] == 1:
+                output.append(variables[variable])
+            else:
+                output.append('!' + variables[variable])
+    return output
+
+def table_inversion(table: list):
+    operable_table = copy.deepcopy(table)
+    for sublist in range(len(operable_table)):
+        for statement in range(len(operable_table[sublist])):
+            if operable_table[sublist][statement] == 1:
+                operable_table[sublist][statement] = 0
+            else:
+                operable_table[sublist][statement] = 1
+    return operable_table
 
 
 class Map:
     def __init__(self, table_of_truth, variables):
         self.table_of_truth = table_of_truth
         self.main_table, self.grey_code_row, self.grey_code_column = table_constructor(table_of_truth)
+        self.sknf_table = table_inversion(self.main_table)
         self.variables = variables
 
-    def karno_map_processor(self):
+    def karno_map_processor(self, current_table):
         final_fill = []
-        shapes = shapes_constructor(self.main_table)
-        checked_table = [[0 for column in row] for row in self.main_table]
+        shapes = shapes_constructor(current_table)
+        checked_table = [[0 for column in row] for row in current_table]
         for shape in shapes:
-            if checked_table == self.main_table:
+            if checked_table == current_table:
                 break
             iterational_shape =copy.deepcopy(shape)
-            type_iter = type_of_iteration(iterational_shape, self.main_table)
+            type_iter = type_of_iteration(iterational_shape, current_table)
             while iterational_shape:
-                if check_logic(iterational_shape, self.main_table) and tautology_check(iterational_shape,
+                if check_logic(iterational_shape, current_table) and tautology_check(iterational_shape,
                                                                                        checked_table):
-                    for coordinates in iterational_shape:
-                        checked_table[coordinates[0]][coordinates[1]] = 1
                     final_fill.append(copy.deepcopy(iterational_shape))
                 if type_iter == 1:
-                    iterational_shape = next_iteration_tall(iterational_shape, self.main_table)
+                    iterational_shape = next_iteration_tall(iterational_shape, current_table)
                 elif type_iter == 2:
-                    iterational_shape = next_iteration_wide(iterational_shape, self.main_table)
+                    iterational_shape = next_iteration_wide(iterational_shape, current_table)
                 elif type_iter == 3:
-                    iterational_shape = next_iteration_point(iterational_shape, self.main_table)
+                    iterational_shape = next_iteration_point(iterational_shape, current_table)
                 else:
-                    iterational_shape = next_iteration(iterational_shape, self.main_table)
+                    iterational_shape = next_iteration(iterational_shape, current_table)
         return final_fill
 
-    def miniterm_union(self):
+    def variations_checker(self, current_table):
+        final_fill = self.karno_map_processor(current_table)
+        list_of_combinations = []
+        for shapes in range(len(final_fill)):
+            current_shapes_combination = [copy.deepcopy(final_fill[shapes])]
+            current_combination = copy.deepcopy(current_table)
+            checked_cells = [[0 for number in sublist] for sublist in current_combination]
+            iteration = 0
+            while len(final_fill) > iteration and checked_cells != current_combination:
+                if tautology_check(final_fill[iteration], checked_cells):
+                    for coordinates in final_fill[iteration]:
+                        checked_cells[coordinates[0]][coordinates[1]] = 1
+                    current_shapes_combination.append(final_fill[iteration])
+                iteration += 1
+            if current_combination == checked_cells:
+                list_of_combinations.append(current_shapes_combination)
+        return list_of_combinations
+
+    def miniterm_union(self, figures):
         result = []
-        figures = self.karno_map_processor()
         for figure in figures:
             miniterm = []
             for coordinates in figure:
                 miniterm.append(self.grey_code_row[coordinates[0]]+self.grey_code_column[coordinates[1]])
             checker = final_collection(miniterm, self.variables)
-            miniterm = variables_filler(self.variables, miniterm)
-            final_form = []
-            for sublist in range(len(miniterm)):
-                final_form.append([])
-                for variable in miniterm[sublist]:
-                    if not checker.get(variable):
-                        final_form[sublist].append(variable)
-            result.append(final_form)
+            result.append(checker)
         result_cleaned = []
-        for obj in result:
-            for subobj in obj:
-                if result_cleaned.count(subobj) == 0:
-                    result_cleaned.append(subobj)
+        for variable in result:
+            if result_cleaned.count(variable) == 0:
+                result_cleaned.append(variable)
         return result_cleaned
+
+    def all_variations(self, current_table):
+        all_coombinations_unprocessed = self.variations_checker(current_table)
+        processed = []
+        for coombination in all_coombinations_unprocessed:
+            processed.append(self.miniterm_union(coombination))
+        output = []
+        for variation in processed:
+            if output.count(variation) == 0:
+                output.append(variation)
+        len_list = [len(variation) for variation in output]
+        output = output[len_list.index(min(len_list))]
+        return output
+
+    def output(self):
+        sknf_reconstructed = self.all_variations(self.sknf_table)
+        for sublist in range(len(sknf_reconstructed)):
+            for variable in range(len(sknf_reconstructed[sublist])):
+                if len(sknf_reconstructed[sublist][variable]) == 2:
+                    sknf_reconstructed[sublist][variable] = sknf_reconstructed[sublist][variable].removeprefix('!')
+                else:
+                    sknf_reconstructed[sublist][variable] = '!' + sknf_reconstructed[sublist][variable]
+        return self.all_variations(self.main_table), sknf_reconstructed
+
+
